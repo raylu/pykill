@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-from os import path
-import sys
-sys.path.append(path.normpath('/home/raylu/pykill'))
+if __name__ == '__main__':
+	from os import path
+	import sys
+	sys.path.append(path.normpath(path.join(path.dirname(path.abspath(__file__)), '..')))
 
 from xml.etree import ElementTree
 
