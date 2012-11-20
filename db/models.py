@@ -58,11 +58,13 @@ class Kill(BaseModel):
 		with conn.cursor() as c:
 			c.execute('''
 					SELECT killTime,
-						characterName, corporationName, allianceName, factionName,
-						typeName as shipTypeName, damageTaken
+						characterID, characterName, corporationName, allianceName, factionName,
+						t.typeID as shipTypeID, typeName as shipTypeName, damageTaken,
+						s.solarSystemName as systemName, s.security as systemSecurity
 					FROM pkKillmails AS k
 					JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
 					JOIN invTypes AS t ON c.shipTypeID = t.typeID
+					JOIN mapSolarSystems as s ON k.solarSystemID = s.solarSystemID
 					WHERE k.killID = ?
 				''', (kill_id,))
 			kill = cls.objectify(c)
@@ -70,7 +72,7 @@ class Kill(BaseModel):
 
 			c.execute('''
 					SELECT
-						characterName, corporationName, allianceName, factionName,
+						characterID, characterName, corporationName, allianceName, factionName,
 						damageDone, securityStatus,
 						t1.typeName as shipTypeName, t2.typeName as weaponTypeName
 					FROM pkKillmails AS k
