@@ -28,7 +28,13 @@ class Kill(BaseModel):
 		])
 
 	@classmethod
-	def fetch_top(cls):
+	def count(cls):
+		with conn.cursor() as c:
+			c.execute('SELECT COUNT(killID) FROM pkKillmails')
+			return c.fetchone()[0]
+
+	@classmethod
+	def fetch_top(cls, offset, count):
 		c = conn.cursor()
 		c.execute('''
 				SELECT k.killID, killTime,
@@ -38,8 +44,8 @@ class Kill(BaseModel):
 				JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
 				JOIN invTypes AS t ON c.shipTypeID = t.typeID
 				ORDER BY killTime DESC
-				LIMIT 50
-			''')
+				LIMIT ?, ?
+			''', (offset, count))
 		class expando(): pass
 		while True:
 			r = c.fetchone()

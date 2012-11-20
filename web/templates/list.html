@@ -9,4 +9,12 @@
 		{{ kill.shipTypeName }}
 		<br>
 	{% end %}
+
+	{% for i in range(1, page['max']+1) %}
+		{% if i == page['current'] %}
+			<a href="/page/{{ i }}" class="current">{{ i }}</a>
+		{% else %}
+			<a href="/page/{{ i }}">{{ i }}</a>
+		{% end %}
+	{% end %}
 {% end %}
