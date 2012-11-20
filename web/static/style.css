@@ -11,9 +11,6 @@ a:hover {
 	color: #0af;
 	text-decoration: underline;
 }
-a.current {
-	font-weight: bold;
-}
 img {
 	border-style: none;
 }
@@ -22,4 +19,28 @@ div#content {
 	margin: 50px auto;
 	background: #111;
 	padding: 50px;
+}
+
+a.current {
+	font-weight: bold;
+}
+
+div.attackers {
+	float: left;
+	width: 350px;
+}
+div.items {
+	float: right;
+	width: 325px;
+}
+div.attacker {
+	background-color: #222;
+	margin-top: 10px;
+}
+div.item {
+	background-color: #222;
+	margin-top: 2px;
+}
+div.clear {
+	clear: both;
 }

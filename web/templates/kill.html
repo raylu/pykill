@@ -3,8 +3,38 @@
 {% block content %}
 	{{ kill.killTime }}
 	{{ kill.characterName }}
-	{{ kill.corporationName }}
-	{{ kill.allianceName }}
-	{{ kill.factionName }}
-	{{ kill.shipTypeName }}
+	<br>{{ kill.corporationName }}
+	<br>{{ kill.allianceName }}
+	<br>{{ kill.factionName }}
+	<br>{{ kill.shipTypeName }}
+
+	<br>
+	<div class="attackers">
+		{% for i, attacker in enumerate(kill.attackers) %}
+			<div class="attacker">
+				{{ attacker.characterName }} {{ i == 0 and "(final blow)" or "" }}
+				<br>{{ attacker.corporationName }}
+				<br>{{ attacker.allianceName }}
+				<br>{{ attacker.factionName }}
+				<br>{{ attacker.shipTypeName }}
+				<br>{{ attacker.weaponTypeName }}
+				<br>{{ attacker.damageDone }}
+				<br>{{ attacker.securityStatus }}
+			</div>
+		{% end %}
+	</div>
+
+	<div class="items">
+		{% for item in kill.items %}
+			<div class="item">
+				<img src="http://image.eveonline.com/InventoryType/{{ item.typeID }}_32.png">
+				{{ item.typeName }} {{ item.singleton == 2 and "(BPC)" or "" }}
+				<br>{{ item.flag }}
+				<br>{{ item.qtyDropped }}
+				<br>{{ item.qtyDestroyed }}
+			</div>
+		{% end %}
+	</div>
+
+	<div class="clear"></div>
 {% end %}

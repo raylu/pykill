@@ -46,36 +46,74 @@ class Kill(BaseModel):
 				ORDER BY killTime DESC
 				LIMIT ?, ?
 			''', (offset, count))
-		class expando(): pass
 		while True:
-			r = c.fetchone()
-			if r is None:
+			attribs = cls.objectify(c)
+			if attribs is None:
 				break
-			attribs = expando()
-			for i, f in enumerate(c.description):
-				setattr(attribs, f[0], r[i])
 			yield attribs
 		c.close()
 
 	@classmethod
 	def fetch(cls, kill_id):
-		c = conn.cursor()
-		c.execute('''
-				SELECT k.killID, killTime,
-					characterName, corporationName, allianceName, factionName,
-					typeName as shipTypeName
-				FROM pkKillmails AS k
-				JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
-				JOIN invTypes AS t ON c.shipTypeID = t.typeID
-				WHERE k.killID = ?
-				ORDER BY killTime DESC
-			''', (kill_id,))
+		with conn.cursor() as c:
+			c.execute('''
+					SELECT killTime,
+						characterName, corporationName, allianceName, factionName,
+						typeName as shipTypeName, damageTaken
+					FROM pkKillmails AS k
+					JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
+					JOIN invTypes AS t ON c.shipTypeID = t.typeID
+					WHERE k.killID = ?
+				''', (kill_id,))
+			kill = cls.objectify(c)
+			c.nextset()
+
+			c.execute('''
+					SELECT
+						characterName, corporationName, allianceName, factionName,
+						damageDone, securityStatus,
+						t1.typeName as shipTypeName, t2.typeName as weaponTypeName
+					FROM pkKillmails AS k
+					JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = false
+					JOIN invTypes AS t1 ON c.shipTypeID = t1.typeID
+					JOIN invTypes AS t2 ON c.weaponTypeID = t2.typeID
+					WHERE k.killID = ?
+					ORDER BY c.finalBlow DESC
+				''', (kill_id,))
+			attackers = []
+			while True:
+				attribs = cls.objectify(c)
+				if attribs is None:
+					break
+				attackers.append(attribs)
+
+			c.execute('''
+					SELECT i.typeID as typeID, typeName, flag, qtyDropped, qtyDestroyed, singleton
+					FROM pkItems as i
+					JOIN invTypes AS t ON i.typeID = t.typeID
+					WHERE i.killID = ?
+					ORDER BY flag
+				''', (kill_id,))
+			items = []
+			while True:
+				attribs = cls.objectify(c)
+				if attribs is None:
+					break
+				items.append(attribs)
+
+		kill.attackers = attackers
+		kill.items = items
+		return kill
+
+	@classmethod
+	def objectify(cls, cursor):
+		r = cursor.fetchone()
+		if r is None:
+			return
 		class expando(): pass
-		r = c.fetchone()
 		attribs = expando()
-		for i, f in enumerate(c.description):
+		for i, f in enumerate(cursor.description):
 			setattr(attribs, f[0], r[i])
-		c.close()
 		return attribs
 
 class Character(BaseModel):
