@@ -1,0 +1,12 @@
+{% extends "base.html %}
+
+{% block content %}
+	{% for kill in kills %}
+		<a href="/kill/{{ kill.killID }}">{{ kill.killTime }} {{ kill.characterName }}</a>
+		{{ kill.corporationName }}
+		{{ kill.allianceName }}
+		{{ kill.factionName }}
+		{{ kill.shipTypeName }}
+		<br>
+	{% end %}
+{% end %}

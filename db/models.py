@@ -27,6 +27,51 @@ class Kill(BaseModel):
 			'moonID',
 		])
 
+	@classmethod
+	def fetch_top(cls):
+		c = conn.cursor()
+		c.execute('''
+				SELECT k.killID, killTime,
+					characterName, corporationName, allianceName, factionName,
+					typeName as shipTypeName
+				FROM pkKillmails AS k
+				JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
+				JOIN invTypes AS t ON c.shipTypeID = t.typeID
+				ORDER BY killTime DESC
+				LIMIT 50
+			''')
+		class expando(): pass
+		while True:
+			r = c.fetchone()
+			if r is None:
+				break
+			attribs = expando()
+			for i, f in enumerate(c.description):
+				setattr(attribs, f[0], r[i])
+			yield attribs
+		c.close()
+
+	@classmethod
+	def fetch(cls, kill_id):
+		c = conn.cursor()
+		c.execute('''
+				SELECT k.killID, killTime,
+					characterName, corporationName, allianceName, factionName,
+					typeName as shipTypeName
+				FROM pkKillmails AS k
+				JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
+				JOIN invTypes AS t ON c.shipTypeID = t.typeID
+				WHERE k.killID = ?
+				ORDER BY killTime DESC
+			''', (kill_id,))
+		class expando(): pass
+		r = c.fetchone()
+		attribs = expando()
+		for i, f in enumerate(c.description):
+			setattr(attribs, f[0], r[i])
+		c.close()
+		return attribs
+
 class Character(BaseModel):
 	table = 'pkCharacters'
 	fields = frozenset([
