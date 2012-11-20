@@ -39,7 +39,7 @@ class Kill(BaseModel):
 		c.execute('''
 				SELECT k.killID, killTime,
 					characterName, corporationName, allianceName, factionName,
-					typeName as shipTypeName
+					shipTypeID, typeName as shipTypeName
 				FROM pkKillmails AS k
 				JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
 				JOIN invTypes AS t ON c.shipTypeID = t.typeID
@@ -73,7 +73,7 @@ class Kill(BaseModel):
 			c.execute('''
 					SELECT
 						characterID, characterName, corporationName, allianceName, factionName,
-						damageDone, securityStatus,
+						damageDone, securityStatus, shipTypeID,
 						t1.typeName as shipTypeName, t2.typeName as weaponTypeName
 					FROM pkKillmails AS k
 					JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = false

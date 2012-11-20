@@ -3,12 +3,12 @@
 {% block content %}
 	{{ kill.killTime }}
 	<br>{{ kill.systemName }} {{ kill.systemSecurity }}
-	<br><img src="http://image.eveonline.com/Character/{{ kill.characterID }}_64.jpg">
+	<br><img src="http://image.eveonline.com/Character/{{ kill.characterID }}_128.jpg">
 	{{ kill.characterName }}
 	<br>{{ kill.corporationName }}
 	<br>{{ kill.allianceName }}
 	<br>{{ kill.factionName }}
-	<br><img src="http://image.eveonline.com/Render/{{ kill.shipTypeID }}_64.png">
+	<br><img src="http://image.eveonline.com/Render/{{ kill.shipTypeID }}_128.png">
 	{{ kill.shipTypeName }}
 	<br>{{ kill.damageTaken }}
 
@@ -21,7 +21,8 @@
 				<br>{{ attacker.corporationName }}
 				<br>{{ attacker.allianceName }}
 				<br>{{ attacker.factionName }}
-				<br>{{ attacker.shipTypeName }}
+				<br><img src="http://image.eveonline.com/Render/{{ attacker.shipTypeID }}_64.png">
+				{{ attacker.shipTypeName }}
 				<br>{{ attacker.weaponTypeName }}
 				<br>{{ attacker.damageDone }}
 				<br>{{ attacker.securityStatus }}

@@ -2,6 +2,7 @@
 
 {% block content %}
 	{% for kill in kills %}
+		<img src="http://image.eveonline.com/Render/{{ kill.shipTypeID }}_32.png">
 		<a href="/kill/{{ kill.killID }}">{{ kill.killTime }} {{ kill.characterName }}</a>
 		{{ kill.corporationName }}
 		{{ kill.allianceName }}

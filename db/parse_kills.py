@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
+from xml.etree import ElementTree
+import sys
+
 if __name__ == '__main__':
 	from os import path
-	import sys
 	sys.path.append(path.normpath(path.join(path.dirname(path.abspath(__file__)), '..')))
-
-from xml.etree import ElementTree
 
 from db import models
 
@@ -34,7 +34,7 @@ def parse_kill(row):
 		m_item.save()
 
 if __name__ == '__main__':
-	tree = ElementTree.parse('11-18-2012-20-41.xml')
+	tree = ElementTree.parse(sys.argv[1])
 	rows = tree.getroot().find('result').find('rowset').getchildren()
 	for row in rows:
 		parse_kill(row)
