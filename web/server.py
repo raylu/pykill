@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import datetime
 import tornado.ioloop
 import tornado.web
 
@@ -29,6 +30,11 @@ class ListHandler(tornado.web.RequestHandler):
 class KillHandler(tornado.web.RequestHandler):
 	def get(self, kill_id):
 		kill = models.Kill.fetch(kill_id)
+		ago = datetime.datetime.now() - kill.killTime
+		if ago.days < 2:
+			kill.ago = '%s hours' % round(ago.days * 24 + ago.seconds / (60 * 60), 1)
+		else:
+			kill.ago = '%s days' % round(ago.days + ago.seconds / (60 * 60 * 24), 1)
 		self.render('kill.html', kill=kill)
 
 if __name__ == "__main__":

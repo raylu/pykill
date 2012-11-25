@@ -1,19 +1,75 @@
-div.attackers {
+img.portrait {
+	float: right;
+}
+
+div.victim {
 	float: left;
-	width: 350px;
+	width: 375px;
+	background-color: #222;
+	padding: 25px;
+}
+div.ship {
+	float: right;
+	width: 375px;
+	background-color: #222;
+	padding: 25px;
+}
+	div.ship img {
+		float: left;
+		margin-right: 20px;
+	}
+div.attackers {
+	clear: left;
+	float: left;
+	width: 425px;
 }
 div.items {
 	float: right;
-	width: 325px;
+	width: 425px;
 }
 div.attacker {
 	background-color: #222;
 	margin-top: 10px;
+	padding: 25px;
+	position: relative; /* for .ship */
 }
+	div.attacker div.text {
+		margin-left: 36px;
+	}
+	div.attacker div.img img {
+		margin: 2px 0;
+	}
+	div.attacker img.ship {
+		position: absolute;
+		bottom: 25px;
+		right: 25px;
+	}
 div.item {
-	background-color: #222;
 	margin-top: 2px;
+	background-color: #222;
 }
+	div.item img {
+		vertical-align: top;
+	}
+	div.item.ammo {
+		width: 393px;
+		margin-left: 32px;
+	}
+	div.item div.name {
+		display: inline-block;
+		width: 378px;
+		padding: 5px 5px 7px;
+	}
+	div.item.ammo div.name {
+		width: 346px;
+	}
+	div.item div.dropped {
+		background-color: #232;
+	}
+	div.item div.destroyed {
+		background-color: #222;
+	}
+
 div.clear {
 	clear: both;
 }

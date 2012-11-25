@@ -5,42 +5,89 @@
 {% end %}
 
 {% block content %}
-	{{ kill.killTime }}
-	<br>{{ kill.systemName }} {{ kill.systemSecurity }}
-	<br><img src="http://image.eveonline.com/Character/{{ kill.characterID }}_128.jpg">
-	{{ kill.characterName }}
-	<br>{{ kill.corporationName }}
-	<br>{{ kill.allianceName }}
-	<br><img src="http://image.eveonline.com/Render/{{ kill.shipTypeID }}_128.png">
-	{{ kill.shipTypeName }}
-	<br>{{ kill.damageTaken }}
+	<div class="victim">
+		<img src="http://image.eveonline.com/Character/{{ kill.characterID }}_128.jpg" class="portrait">
+		{{ kill.killTime.strftime('%a %b %d %H:%M') }} ({{ kill.ago }} ago)
+		<br>{{ kill.systemName }} {{ round(kill.systemSecurity, 1) }}
+		<br>{{ kill.characterName }}
+		<br><img src="http://image.eveonline.com/Corporation/{{ kill.corporationID }}_32.png">
+		{{ kill.corporationName }}
+		<br><img src="http://image.eveonline.com/Alliance/{{ kill.allianceID }}_32.png">
+		{{ kill.allianceName }}
+	</div>
+	<div class="ship">
+		<img src="http://image.eveonline.com/Render/{{ kill.shipTypeID }}_128.png">
+		{{ kill.shipTypeName }}
+		<br><br>
+		Damage taken: {{ kill.damageTaken }}
+	</div>
 
-	<br>
 	<div class="attackers">
-		{% for i, attacker in enumerate(kill.attackers) %}
+		{% for attacker in kill.attackers %}
 			<div class="attacker">
-				<img src="http://image.eveonline.com/Character/{{ attacker.characterID }}_64.jpg">
-				{{ attacker.characterName }} {{ i == 0 and "(final blow)" or "" }}
-				<br>{{ attacker.corporationName }}
-				<br>{{ attacker.allianceName }}
-				<br><img src="http://image.eveonline.com/Render/{{ attacker.shipTypeID }}_64.png">
-				{{ attacker.shipTypeName }}
-				<br>{{ attacker.weaponTypeName }}
-				<br>{{ attacker.damageDone }}
-				<br>{{ attacker.securityStatus }}
+				<img src="http://image.eveonline.com/Character/{{ attacker.characterID }}_64.jpg" class="portrait">
+				<img src="http://image.eveonline.com/InventoryType/{{ attacker.shipTypeID }}_64.png" class="ship">
+				<div class="text">
+					{{ attacker.characterName }} {{ attacker.finalBlow and "(final blow)" or "" }}
+				</div>
+				<div class="img">
+					<img src="http://image.eveonline.com/Corporation/{{ attacker.corporationID }}_32.png">
+					{{ attacker.corporationName }}
+				</div>
+				<div class="img">
+					<img src="http://image.eveonline.com/Alliance/{{ attacker.allianceID }}_32.png">
+					{{ attacker.allianceName }}
+				</div>
+				<div class="text">{{ attacker.shipTypeName }}</div>
+				{% if attacker.shipTypeID != attacker.weaponTypeID %}
+					<div class="img">
+						<img src="http://image.eveonline.com/InventoryType/{{ attacker.weaponTypeID }}_32.png">
+						{{ attacker.weaponTypeName }}
+					</div>
+				{% end %}
+				<div class="text">Damage dealt: {{ attacker.damageDone }}</div>
+				<div class="text">Security status: {{ round(attacker.securityStatus, 1) }}</div>
 			</div>
 		{% end %}
 	</div>
 
 	<div class="items">
+		{% set last_slot = None %}
 		{% for item in kill.items %}
-			<div class="item">
-				<img src="http://image.eveonline.com/InventoryType/{{ item.typeID }}_32.png">
-				{{ item.typeName }} {{ item.singleton == 2 and "(BPC)" or "" }}
-				<br>{{ item.flag }}
-				<br>{{ item.qtyDropped }}
-				<br>{{ item.qtyDestroyed }}
-			</div>
+			{% if 27 <= item.flag <= 34 %}
+				{% set slot = 'High' %}
+			{% elif 19 <= item.flag <= 26 %}
+				{% set slot = 'Medium' %}
+			{% elif 11 <= item.flag <= 18 %}
+				{% set slot = 'Low' %}
+			{% elif 92 <= item.flag <= 99 %}
+				{% set slot = 'Rig' %}
+			{% elif item.flag == 5 %}
+				{% set slot = 'Cargo' %}
+			{% end %}
+			{% if last_slot != slot %}
+				{{ slot }}
+			{% end %}
+			{% set last_slot = slot %}
+			{% set ammo = (item.qtyDestroyed > 1 or item.qtyDropped > 1) and slot != 'Cargo' %}
+			{% if item.qtyDropped %}
+				<div class="item{{ ammo and " ammo" or "" }}">
+					<img src="http://image.eveonline.com/InventoryType/{{ item.typeID }}_32.png">
+					<div class="name dropped">
+						{{ item.typeName }} {{ item.singleton == 2 and "(BPC)" or "" }}
+						{{ item.qtyDropped > 1 and "x%d" % item.qtyDropped or "" }}
+					</div>
+				</div>
+			{% end %}
+			{% if item.qtyDestroyed %}
+				<div class="item{{ ammo and " ammo" or "" }}">
+					<img src="http://image.eveonline.com/InventoryType/{{ item.typeID }}_32.png">
+					<div class="name destroyed">
+						{{ item.typeName }} {{ item.singleton == 2 and "(BPC)" or "" }}
+						{{ item.qtyDestroyed > 1 and "x%d" % item.qtyDestroyed or "" }}
+					</div>
+				</div>
+			{% end %}
 		{% end %}
 	</div>
 

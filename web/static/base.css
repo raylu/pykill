@@ -13,6 +13,7 @@ a:hover {
 }
 img {
 	border-style: none;
+	vertical-align: middle;
 }
 div.content {
 	width: 900px;

@@ -57,8 +57,9 @@ class Kill(BaseModel):
 	def fetch(cls, kill_id):
 		with conn.cursor() as c:
 			c.execute('''
-					SELECT killTime,
-						characterID, characterName, corporationName, allianceName,
+					SELECT
+						killTime, characterID, characterName,
+						corporationID, corporationName, allianceID, allianceName,
 						t.typeID as shipTypeID, typeName as shipTypeName, damageTaken,
 						s.solarSystemName as systemName, s.security as systemSecurity
 					FROM pkKillmails AS k
@@ -72,15 +73,17 @@ class Kill(BaseModel):
 
 			c.execute('''
 					SELECT
-						characterID, characterName, corporationName, allianceName,
-						damageDone, securityStatus, shipTypeID,
-						t1.typeName as shipTypeName, t2.typeName as weaponTypeName
+						characterID, characterName, finalBlow,
+						corporationID, corporationName, allianceID, allianceName,
+						damageDone, securityStatus,
+						shipTypeID, t1.typeName as shipTypeName,
+						weaponTypeID, t2.typeName as weaponTypeName
 					FROM pkKillmails AS k
 					JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = false
 					JOIN invTypes AS t1 ON c.shipTypeID = t1.typeID
 					JOIN invTypes AS t2 ON c.weaponTypeID = t2.typeID
 					WHERE k.killID = ?
-					ORDER BY c.finalBlow DESC
+					ORDER BY c.finalBlow DESC, c.damageDone DESC
 				''', (kill_id,))
 			attackers = []
 			while True:
@@ -94,7 +97,7 @@ class Kill(BaseModel):
 					FROM pkItems as i
 					JOIN invTypes AS t ON i.typeID = t.typeID
 					WHERE i.killID = ?
-					ORDER BY flag
+					ORDER BY flag DESC, qtyDropped + qtyDestroyed ASC
 				''', (kill_id,))
 			items = []
 			while True:
