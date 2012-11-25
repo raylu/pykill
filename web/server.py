@@ -3,10 +3,10 @@
 import tornado.ioloop
 import tornado.web
 
-if __name__ == '__main__':
-	from os import path
-	import sys
-	sys.path.append(path.normpath(path.join(path.dirname(path.abspath(__file__)), '..')))
+from os import path
+import sys
+pk_path = path.normpath(path.join(path.dirname(path.abspath(__file__)), '..'))
+sys.path.append(pk_path)
 
 from db import models
 
@@ -32,10 +32,11 @@ class KillHandler(tornado.web.RequestHandler):
 		self.render('kill.html', kill=kill)
 
 if __name__ == "__main__":
+	template_path = path.join(pk_path, 'web', 'templates')
 	application = tornado.web.Application([
 		(r'/', MainHandler),
 		(r'/page/([0-9]+)', ListHandler),
 		(r'/kill/([0-9]+)', KillHandler),
-	], template_path='templates', debug=True)
+	], template_path=template_path, debug=True)
 	application.listen(8002)
 	tornado.ioloop.IOLoop.instance().start()

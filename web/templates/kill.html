@@ -1,5 +1,9 @@
 {% extends "base.html %}
 
+{% block css %}
+	<link href="/static/kill.css" rel="stylesheet" type="text/css">
+{% end %}
+
 {% block content %}
 	{{ kill.killTime }}
 	<br>{{ kill.systemName }} {{ kill.systemSecurity }}
@@ -7,7 +11,6 @@
 	{{ kill.characterName }}
 	<br>{{ kill.corporationName }}
 	<br>{{ kill.allianceName }}
-	<br>{{ kill.factionName }}
 	<br><img src="http://image.eveonline.com/Render/{{ kill.shipTypeID }}_128.png">
 	{{ kill.shipTypeName }}
 	<br>{{ kill.damageTaken }}
@@ -20,7 +23,6 @@
 				{{ attacker.characterName }} {{ i == 0 and "(final blow)" or "" }}
 				<br>{{ attacker.corporationName }}
 				<br>{{ attacker.allianceName }}
-				<br>{{ attacker.factionName }}
 				<br><img src="http://image.eveonline.com/Render/{{ attacker.shipTypeID }}_64.png">
 				{{ attacker.shipTypeName }}
 				<br>{{ attacker.weaponTypeName }}

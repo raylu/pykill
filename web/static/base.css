@@ -1,0 +1,22 @@
+body {
+	background-color: #000;
+	color: #ccc;
+	font-family: Metrophobic, sans-serif;
+	font-size: 16px;
+}
+a:link, a:visited {
+	color: #08a;
+	text-decoration: none;
+}
+a:hover {
+	color: #0af;
+}
+img {
+	border-style: none;
+}
+div.content {
+	width: 900px;
+	margin: 50px auto;
+	background: #111;
+	padding: 50px;
+}

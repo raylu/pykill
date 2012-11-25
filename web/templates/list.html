@@ -1,21 +1,35 @@
 {% extends "base.html %}
 
+{% block css %}
+	<link href="/static/list.css" rel="stylesheet" type="text/css">
+{% end %}
+
 {% block content %}
 	{% for kill in kills %}
-		<img src="http://image.eveonline.com/Render/{{ kill.shipTypeID }}_32.png">
-		<a href="/kill/{{ kill.killID }}">{{ kill.killTime }} {{ kill.characterName }}</a>
-		{{ kill.corporationName }}
-		{{ kill.allianceName }}
-		{{ kill.factionName }}
-		{{ kill.shipTypeName }}
-		<br>
+		<div class="kill {{ kill.corporationID == 98004522 and 'us' or 'them'}}">
+			<div class="datetime">{{ kill.killTime.strftime('%a %b %d %H:%M') }}</div>
+			<div class="image">
+				<a href="/kill/{{ kill.killID }}">
+					<img src="http://image.eveonline.com/Render/{{ kill.shipTypeID }}_32.png">
+					{{ kill.characterName }}
+				</a>
+			</div>
+			<div class="oneline">{{ kill.corporationName }}</div>
+			<div class="image">
+				{% if kill.allianceID %}
+					<img src="http://image.eveonline.com/Alliance/{{ kill.allianceID }}_32.png">
+					{{ kill.allianceName }}
+				{% end %}
+			</div>
+			<div class="oneline">{{ kill.shipTypeName }}</div>
+		</div>
 	{% end %}
 
-	{% for i in range(1, page['max']+1) %}
-		{% if i == page['current'] %}
-			<a href="/page/{{ i }}" class="current">{{ i }}</a>
-		{% else %}
-			<a href="/page/{{ i }}">{{ i }}</a>
+	<div class="pages">
+		{% for i in range(1, page['max']+1) %}
+		<a href="/page/{{ i }}"{% raw i == page['current'] and ' class="current"' or ''%}>
+			{{ i }}
+		</a>
 		{% end %}
-	{% end %}
+	</div>
 {% end %}

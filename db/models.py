@@ -38,7 +38,7 @@ class Kill(BaseModel):
 		c = conn.cursor()
 		c.execute('''
 				SELECT k.killID, killTime,
-					characterName, corporationName, allianceName, factionName,
+					characterName, corporationID, corporationName, allianceID, allianceName,
 					shipTypeID, typeName as shipTypeName
 				FROM pkKillmails AS k
 				JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
@@ -58,7 +58,7 @@ class Kill(BaseModel):
 		with conn.cursor() as c:
 			c.execute('''
 					SELECT killTime,
-						characterID, characterName, corporationName, allianceName, factionName,
+						characterID, characterName, corporationName, allianceName,
 						t.typeID as shipTypeID, typeName as shipTypeName, damageTaken,
 						s.solarSystemName as systemName, s.security as systemSecurity
 					FROM pkKillmails AS k
@@ -72,7 +72,7 @@ class Kill(BaseModel):
 
 			c.execute('''
 					SELECT
-						characterID, characterName, corporationName, allianceName, factionName,
+						characterID, characterName, corporationName, allianceName,
 						damageDone, securityStatus, shipTypeID,
 						t1.typeName as shipTypeName, t2.typeName as weaponTypeName
 					FROM pkKillmails AS k

@@ -1,0 +1,54 @@
+div.kill {
+	border-bottom: 1px solid #222;
+	padding: 2px 0;
+}
+div.kill.us {
+}
+div.kill.them {
+	background-color: #121;
+}
+
+div.kill > div {
+	display: inline-block;
+	height: 34px;
+	vertical-align: top;
+	overflow-x: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+div.kill > div.datetime {
+	width: 100px;
+	white-space: normal;
+	line-height: 16px;
+}
+div.image {
+	width: 200px;
+}
+	div.image img {
+		vertical-align: middle;
+		height: 32px;
+		width: 32px;
+	}
+div.oneline {
+	width: 180px;
+	line-height: 30px;
+}
+
+div.pages {
+	margin-top: 24px;
+	text-align: center;
+}
+div.pages > a {
+	display: inline-block;
+	width: 18px;
+	margin: 0 1px;
+	border: 1px solid #222;
+}
+div.pages > a:hover {
+	background-color: #000;
+	border-color: #444;
+}
+a.current {
+	font-weight: bold;
+}
