@@ -42,20 +42,24 @@ class KillHandler(RequestHandler):
 
 		items = defaultdict(dict)
 		for item in models.Item.fetch(kill_id):
-			if 27 <= item.flag <= 34:
-				slot = 'High' 
+			if 125 <= item.flag <= 132:
+				slot = 'Sub system'
+			elif 27 <= item.flag <= 34:
+				slot = 'High'
 			elif 19 <= item.flag <= 26:
-				slot = 'Medium' 
+				slot = 'Medium'
 			elif 11 <= item.flag <= 18:
-				slot = 'Low' 
+				slot = 'Low'
 			elif 92 <= item.flag <= 99:
-				slot = 'Rig' 
+				slot = 'Rig'
 			elif item.flag == 87:
-				slot = 'Drone Bay' 
+				slot = 'Drone Bay'
 			elif item.flag == 5:
-				slot = 'Cargo' 
+				slot = 'Cargo'
+			elif 133 <= item.flag <= 143:
+				slot = 'Special Hold'
 			elif item.flag == 89:
-				slot = 'Implant' 
+				slot = 'Implant'
 			else:
 				raise RuntimeError('unknown flag: %r' % item.flag)
 			item.ammo = (item.categoryID == 8 and slot != 'Cargo') # 8 = Charge

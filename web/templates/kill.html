@@ -53,7 +53,7 @@
 	</div>
 
 	<div class="items">
-		{% for slot in ['High', 'Medium', 'Low', 'Rig', 'Drone Bay', 'Cargo', 'Implant'] %}
+		{% for slot in ['Sub system', 'High', 'Medium', 'Low', 'Rig', 'Drone Bay', 'Cargo', 'Special Hold', 'Implant'] %}
 			{% if slot in kill.items %}
 				{{ slot }}
 				{% for item in kill.items[slot] %}
