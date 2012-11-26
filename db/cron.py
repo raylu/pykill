@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import time
 
 from os import path
+import sys
 pk_path = path.normpath(path.join(path.dirname(path.abspath(__file__)), '..'))
 sys.path.append(pk_path)
 

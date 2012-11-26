@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-from xml.etree import ElementTree
+import oursql
 import sys
+from xml.etree import ElementTree
 
 if __name__ == '__main__':
 	from os import path
@@ -19,6 +20,8 @@ def parse_kills(filename):
 	last_kill_id = None
 	for row in rows:
 		last_kill_id = parse_kill(row)
+		if last_kill_id is None:
+			return
 	return last_kill_id
 
 def parse_kill(row):
@@ -28,7 +31,12 @@ def parse_kill(row):
 		raise RuntimeError('unexpected rowsets on kill ' + row.get('killID'))
 
 	m_kill = models.Kill(**row.attrib)
-	m_kill.save()
+	try:
+		m_kill.save()
+	except oursql.IntegrityError as e:
+		if e.errno != oursql.errnos['ER_DUP_ENTRY']:
+			raise
+		return
 
 	m_victim = models.Character(
 			killID=m_kill.killID, victim=True,
