@@ -62,7 +62,7 @@ class KillHandler(RequestHandler):
 			else:
 				items[slot][item.typeID] = item
 		kill.items = items
-		ago = datetime.datetime.now() - kill.killTime
+		ago = datetime.datetime.utcnow() - kill.killTime
 		if ago.days < 2:
 			kill.ago = '%s hours' % round(ago.days * 24 + ago.seconds / (60 * 60), 1)
 		else:
