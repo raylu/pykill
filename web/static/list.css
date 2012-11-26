@@ -31,8 +31,14 @@ div.image {
 		margin-right: 2px;
 	}
 div.oneline {
-	width: 180px;
+	width: 175px;
 	line-height: 30px;
+}
+div.oneline:nth-child(5) {
+	width: 150px;
+}
+div.oneline:nth-child(6) {
+	width: auto;
 }
 
 div.pages {

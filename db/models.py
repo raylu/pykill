@@ -34,15 +34,16 @@ class Kill(BaseModel):
 			return c.fetchone()[0]
 
 	@classmethod
-	def fetch_top(cls, offset, count):
+	def fetch_list(cls, offset, count):
 		c = conn.cursor()
 		c.execute('''
 				SELECT k.killID, killTime,
 					characterName, corporationID, corporationName, allianceID, allianceName,
-					shipTypeID, typeName as shipTypeName
+					shipTypeID, typeName as shipTypeName, cost
 				FROM pkKillmails AS k
 				JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
 				JOIN invTypes AS t ON c.shipTypeID = t.typeID
+				JOIN pkKillCosts AS kc ON k.killID = kc.killID
 				ORDER BY killTime DESC
 				LIMIT ?, ?
 			''', (offset, count))
@@ -66,7 +67,7 @@ class Kill(BaseModel):
 					FROM pkKillmails AS k
 					JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
 					JOIN invTypes AS t ON c.shipTypeID = t.typeID
-					JOIN pkItemCosts AS ic ON c.shipTypeID = ic.typeID
+					LEFT JOIN pkItemCosts AS ic ON c.shipTypeID = ic.typeID
 					JOIN invGroups as g ON t.groupID = g.groupID
 					JOIN mapSolarSystems as s ON k.solarSystemID = s.solarSystemID
 					WHERE k.killID = ?
@@ -147,6 +148,13 @@ class Item(BaseModel):
 				if attribs is None:
 					break
 				yield attribs
+
+class KillCost(BaseModel):
+	table = 'pkKillCosts'
+	fields = frozenset([
+			'killID',
+			'cost',
+		])
 
 class DBRow:
 	def __str__(self):

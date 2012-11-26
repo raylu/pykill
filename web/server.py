@@ -32,12 +32,15 @@ class ListHandler(RequestHandler):
 		max_page = int(max_page_f)
 		if max_page_f != max_page:
 			max_page += 1
-		kills = models.Kill.fetch_top((page-1) * self.page_size, self.page_size)
+		kills = models.Kill.fetch_list((page-1) * self.page_size, self.page_size)
 		self.render('list.html', kills=kills, page={'current': page, 'max': max_page})
 
 class KillHandler(RequestHandler):
 	def get(self, kill_id):
 		kill = models.Kill.fetch(kill_id)
+		if kill.shipCost is None:
+			kill.shipCost = 0
+
 		kill.attackers = models.Character.fetch_attackers(kill_id)
 
 		items = defaultdict(dict)

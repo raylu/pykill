@@ -1,7 +1,8 @@
 DROP TABLE IF EXISTS `pkCharacters`;
 DROP TABLE IF EXISTS `pkItems`;
-DROP TABLE IF EXISTS `pkKillmails`;
 DROP TABLE IF EXISTS `pkItemCosts`;
+DROP TABLE IF EXISTS `pkKillCosts`;
+DROP TABLE IF EXISTS `pkKillmails`;
 
 CREATE TABLE `pkKillmails` (
 	`killID` int unsigned NOT NULL,
@@ -54,4 +55,12 @@ CREATE TABLE `pkItemCosts` (
 	`cost` bigint unsigned NOT NULL,
 	PRIMARY KEY (`typeID`),
 	CONSTRAINT `fk_itemcost_types` FOREIGN KEY (`typeID`) REFERENCES `invTypes` (`typeID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE `pkKillCosts` (
+	`id` int unsigned NOT NULL AUTO_INCREMENT,
+	`killID` int unsigned NOT NULL,
+	`cost` bigint unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `fk_killlcost_km` FOREIGN KEY (`killID`) REFERENCES `pkKillmails` (`killID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

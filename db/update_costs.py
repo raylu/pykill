@@ -14,10 +14,17 @@ from db import conn
 
 def fetch_type_ids():
 	with conn.cursor() as c:
-		c.execute('''
-				SELECT typeID FROM pkItems
-				UNION SELECT shipTypeID FROM pkCharacters WHERE victim
-			''')
+		if len(sys.argv) > 1 and sys.argv[1] in ['-q', '--quick']:
+			c.execute('''
+					SELECT i.typeID FROM pkItems AS i
+						JOIN invTypes AS t ON i.typeID = t.typeID
+						WHERE marketGroupID is NOT NULL
+					UNION SELECT shipTypeID FROM pkCharacters
+						JOIN invTypes ON shipTypeID = typeID
+						WHERE victim AND marketGroupID is NOT NULL
+				''')
+		else:
+			c.execute('SELECT typeID FROM invTypes WHERE marketGroupID IS NOT NULL')
 		while True:
 			r = c.fetchone()
 			if not r:

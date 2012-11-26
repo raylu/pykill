@@ -8,7 +8,7 @@ if __name__ == '__main__':
 	from os import path
 	sys.path.append(path.normpath(path.join(path.dirname(path.abspath(__file__)), '..')))
 
-from db import models
+from db import conn, models
 
 def parse_kills(filename):
 	tree = ElementTree.parse(filename)
@@ -52,6 +52,24 @@ def parse_kill(row):
 	for i in items:
 		m_item = models.Item(killID=m_kill.killID, **i.attrib)
 		m_item.save()
+
+	with conn.cursor() as c:
+		c.execute('SELECT cost from pkItemCosts WHERE typeID = ?', (m_victim.shipTypeID,))
+		r = c.fetchone()
+		if r:
+			cost = r[0]
+			c.nextset()
+		else:
+			cost = 0
+		c.execute('''
+				SELECT SUM(cost * (qtyDropped + qtyDestroyed)) FROM pkItems AS i
+				JOIN pkItemCosts AS ic ON i.typeID = ic.typeID WHERE killID = ?
+			''', (m_kill.killID,))
+		r = c.fetchone()
+		if r[0]:
+			cost += r[0]
+	m_killcost = models.KillCost(killID=m_kill.killID, cost=cost)
+	m_killcost.save()
 
 	return m_kill.killID
 
