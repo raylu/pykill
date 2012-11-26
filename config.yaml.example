@@ -1,0 +1,8 @@
+db:
+    key_id: 123
+    verification_code: abc
+
+web:
+    debug: false
+
+# vim: set et ft=yaml:
