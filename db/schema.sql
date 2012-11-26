@@ -3,45 +3,47 @@ DROP TABLE IF EXISTS `pkItems`;
 DROP TABLE IF EXISTS `pkKillmails`;
 
 CREATE TABLE `pkKillmails` (
-	`killID` int(20) unsigned NOT NULL,
-	`solarSystemID` int(20) unsigned NOT NULL,
+	`killID` int unsigned NOT NULL,
+	`solarSystemID` int NOT NULL,
 	`killTime` datetime NOT NULL,
-	`moonID` int(20) unsigned NOT NULL,
-	PRIMARY KEY (`killID`)
+	`moonID` int unsigned NOT NULL,
+	PRIMARY KEY (`killID`),
+	CONSTRAINT `fk_km_solarsystems` FOREIGN KEY (`solarSystemID`) REFERENCES `mapSolarSystems` (`solarSystemID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `pkCharacters` (
-	`id` int(20) unsigned NOT NULL AUTO_INCREMENT,
-	`killID` int(20) unsigned NOT NULL,
+	`id` int unsigned NOT NULL AUTO_INCREMENT,
+	`killID` int unsigned NOT NULL,
 	`victim` tinyint(1) NOT NULL,
-	`characterID` int(20) unsigned NOT NULL,
+	`characterID` int unsigned NOT NULL,
 	`characterName` varchar(64) NOT NULL,
-	`shipTypeID` int(20) NOT NULL,
-	`allianceID` int(20) NOT NULL,
+	`shipTypeID` int NOT NULL,
+	`allianceID` int unsigned NOT NULL,
 	`allianceName` varchar(64) NOT NULL,
-	`corporationID` int(20) NOT NULL,
+	`corporationID` int unsigned NOT NULL,
 	`corporationName` varchar(64) NOT NULL,
-	`factionID` int(20) NOT NULL,
+	`factionID` int NOT NULL,
 	`factionName` varchar(64) NOT NULL,
-	`damageTaken` int(20) DEFAULT NULL,
-	`damageDone` int(20) DEFAULT NULL,
+	`damageTaken` int DEFAULT NULL,
+	`damageDone` int DEFAULT NULL,
 	`finalBlow` tinyint(1) DEFAULT NULL,
 	`securityStatus` float DEFAULT NULL,
-	`weaponTypeID` int(20) DEFAULT NULL,
+	`weaponTypeID` int DEFAULT NULL,
 	PRIMARY KEY (`id`),
-	KEY `fk_killmails` (`killID`),
-	CONSTRAINT `fk_killmails` FOREIGN KEY (`killID`) REFERENCES `pkKillmails` (`killID`)
+	CONSTRAINT `fk_char_km` FOREIGN KEY (`killID`) REFERENCES `pkKillmails` (`killID`),
+	CONSTRAINT `fk_char_types_ship` FOREIGN KEY (`shipTypeID`) REFERENCES `invTypes` (`typeID`),
+	CONSTRAINT `fk_char_types_weapon` FOREIGN KEY (`weaponTypeID`) REFERENCES `invTypes` (`typeID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `pkItems` (
-	`id` int(20) unsigned NOT NULL AUTO_INCREMENT,
-	`typeID` int(20) unsigned NOT NULL,
-	`killID` int(20) unsigned NOT NULL,
+	`id` int unsigned NOT NULL AUTO_INCREMENT,
+	`killID` int unsigned NOT NULL,
+	`typeID` int NOT NULL,
 	`flag` tinyint(3) unsigned NOT NULL,
-	`qtyDropped` int(20) unsigned NOT NULL,
-	`qtyDestroyed` int(20) unsigned NOT NULL,
+	`qtyDropped` int unsigned NOT NULL,
+	`qtyDestroyed` int unsigned NOT NULL,
 	`singleton` tinyint(4) NOT NULL,
 	PRIMARY KEY (`id`),
-	KEY `killID` (`killID`),
-	CONSTRAINT `items_ibfk_1` FOREIGN KEY (`killID`) REFERENCES `pkKillmails` (`killID`)
+	CONSTRAINT `fk_item_km` FOREIGN KEY (`killID`) REFERENCES `pkKillmails` (`killID`),
+	CONSTRAINT `fk_item_types` FOREIGN KEY (`typeID`) REFERENCES `invTypes` (`typeID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
