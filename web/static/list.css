@@ -28,6 +28,7 @@ div.image {
 	div.image img {
 		height: 32px;
 		width: 32px;
+		margin-right: 2px;
 	}
 div.oneline {
 	width: 180px;

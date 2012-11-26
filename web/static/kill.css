@@ -34,10 +34,10 @@ div.attacker {
 	position: relative; /* for .ship */
 }
 	div.attacker div.text {
-		margin-left: 36px;
+		margin-left: 34px;
 	}
 	div.attacker div.img img {
-		margin: 2px 0;
+		margin: 2px 2px 2px 0;
 	}
 	div.attacker img.ship {
 		position: absolute;
@@ -57,11 +57,11 @@ div.item {
 	}
 	div.item div.name {
 		display: inline-block;
-		width: 378px;
+		width: 383px;
 		padding: 5px 5px 7px;
 	}
 	div.item.ammo div.name {
-		width: 346px;
+		width: 351px;
 	}
 	div.item div.dropped {
 		background-color: #232;

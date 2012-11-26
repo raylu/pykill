@@ -12,11 +12,16 @@ sys.path.append(pk_path)
 
 from db import models
 
-class MainHandler(tornado.web.RequestHandler):
+class RequestHandler(tornado.web.RequestHandler):
+	def render_string(self, template_name, **kwargs):
+		s = super(RequestHandler, self).render_string(template_name, **kwargs)
+		return s.replace(b'\n', b'') # this is like Django's {% spaceless %}
+
+class MainHandler(RequestHandler):
 	def get(self):
 		self.redirect('/page/1')
 
-class ListHandler(tornado.web.RequestHandler):
+class ListHandler(RequestHandler):
 	page_size = 50
 
 	def get(self, page):
@@ -28,7 +33,7 @@ class ListHandler(tornado.web.RequestHandler):
 		kills = models.Kill.fetch_top((page-1) * self.page_size, self.page_size)
 		self.render('list.html', kills=kills, page={'current': page, 'max': max_page})
 
-class KillHandler(tornado.web.RequestHandler):
+class KillHandler(RequestHandler):
 	def get(self, kill_id):
 		kill = models.Kill.fetch(kill_id)
 		kill.attackers = models.Character.fetch_attackers(kill_id)
