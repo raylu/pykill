@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from collections import defaultdict
 import datetime
 import tornado.ioloop
 import tornado.web
@@ -30,6 +31,32 @@ class ListHandler(tornado.web.RequestHandler):
 class KillHandler(tornado.web.RequestHandler):
 	def get(self, kill_id):
 		kill = models.Kill.fetch(kill_id)
+		kill.attackers = models.Character.fetch_attackers(kill_id)
+		items = defaultdict(dict)
+		for item in models.Item.fetch(kill_id):
+			if 27 <= item.flag <= 34:
+				slot = 'High' 
+			elif 19 <= item.flag <= 26:
+				slot = 'Medium' 
+			elif 11 <= item.flag <= 18:
+				slot = 'Low' 
+			elif 92 <= item.flag <= 99:
+				slot = 'Rig' 
+			elif item.flag == 87:
+				slot = 'Drone Bay' 
+			elif item.flag == 5:
+				slot = 'Cargo' 
+			elif item.flag == 89:
+				slot = 'Implant' 
+			else:
+				raise RuntimeError('unknown flag: %r' % item.flag)
+			item.ammo = (item.categoryID == 8 and slot != 'Cargo') # 8 = Charge
+			if item.typeID in items[slot]:
+				items[slot][item.typeID].qtyDropped += item.qtyDropped
+				items[slot][item.typeID].qtyDestroyed += item.qtyDestroyed
+			else:
+				items[slot][item.typeID] = item
+		kill.items = items
 		ago = datetime.datetime.now() - kill.killTime
 		if ago.days < 2:
 			kill.ago = '%s hours' % round(ago.days * 24 + ago.seconds / (60 * 60), 1)
