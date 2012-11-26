@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from collections import defaultdict
+import copy
 import datetime
 import tornado.ioloop
 import tornado.web
@@ -38,6 +39,7 @@ class KillHandler(RequestHandler):
 	def get(self, kill_id):
 		kill = models.Kill.fetch(kill_id)
 		kill.attackers = models.Character.fetch_attackers(kill_id)
+
 		items = defaultdict(dict)
 		for item in models.Item.fetch(kill_id):
 			if 27 <= item.flag <= 34:
@@ -62,12 +64,35 @@ class KillHandler(RequestHandler):
 				items[slot][item.typeID].qtyDestroyed += item.qtyDestroyed
 			else:
 				items[slot][item.typeID] = item
+		total_loss = kill.shipCost / 100
+		for slot in items:
+			item_list = []
+			for item in items[slot].values():
+				if item.qtyDropped:
+					item.quantity = item.qtyDropped
+					item.dropped = True
+					item.total_cost = item.cost * item.quantity / 100
+					item_list.append(item)
+					total_loss += item.total_cost
+				if item.qtyDestroyed:
+					if item.qtyDropped:
+						item = copy.deepcopy(item)
+					item.quantity = item.qtyDestroyed
+					item.dropped = False
+					item.total_cost = item.cost * item.quantity / 100
+					item_list.append(item)
+					total_loss += item.total_cost
+			items[slot] = item_list
 		kill.items = items
+
+		kill.total_loss = total_loss
+
 		ago = datetime.datetime.utcnow() - kill.killTime
 		if ago.days < 2:
 			kill.ago = '%s hours' % round(ago.days * 24 + ago.seconds / (60 * 60), 1)
 		else:
 			kill.ago = '%s days' % round(ago.days + ago.seconds / (60 * 60 * 24), 1)
+
 		self.render('kill.html', kill=kill)
 
 if __name__ == "__main__":

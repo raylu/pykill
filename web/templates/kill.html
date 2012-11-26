@@ -20,6 +20,7 @@
 		{{ kill.shipTypeName }} ({{ kill.groupName}})
 		<br><br>
 		Damage taken: {{ kill.damageTaken }}
+		<br>Cost: {{ round(kill.shipCost / 1e8, 2) }} million ISK
 	</div>
 
 	<div class="attackers">
@@ -55,29 +56,23 @@
 		{% for slot in ['High', 'Medium', 'Low', 'Rig', 'Drone Bay', 'Cargo', 'Implant'] %}
 			{% if slot in kill.items %}
 				{{ slot }}
-				{% for item in kill.items[slot].values() %}
-					{% if item.qtyDropped %}
-						<div class="item{{ item.ammo and " ammo" or "" }}">
-							<img src="http://image.eveonline.com/InventoryType/{{ item.typeID }}_32.png">
-							<div class="name dropped">
-								{{ item.typeName }} {{ item.singleton == 2 and "(BPC)" or "" }}
-								{{ item.qtyDropped > 1 and "x%d" % item.qtyDropped or "" }}
-							</div>
+				{% for item in kill.items[slot] %}
+					<div class="item{{ item.ammo and " ammo" or "" }}">
+						<img src="http://image.eveonline.com/InventoryType/{{ item.typeID }}_32.png">
+						<div class="name {{ item.dropped and "dropped" or "destroyed" }}">
+							{{ item.typeName }} {{ item.singleton == 2 and "(BPC)" or "" }}
+							{{ item.quantity > 1 and "x%d" % item.quantity or "" }}
 						</div>
-					{% end %}
-					{% if item.qtyDestroyed %}
-						<div class="item{{ item.ammo and " ammo" or "" }}">
-							<img src="http://image.eveonline.com/InventoryType/{{ item.typeID }}_32.png">
-							<div class="name destroyed">
-								{{ item.typeName }} {{ item.singleton == 2 and "(BPC)" or "" }}
-								{{ item.qtyDestroyed > 1 and "x%d" % item.qtyDestroyed or "" }}
-							</div>
-						</div>
-					{% end %}
+						<div class="cost">{{ round(item.total_cost / 1e6, 2) }}</div>
+					</div>
 				{% end %}
 			{% end %}
 		{% end %}
+		<p>
+			Total loss: {{ round(kill.total_loss / 1e6, 2) }} million ISK
+		</p>
 	</div>
+
 
 	<div class="clear"></div>
 {% end %}

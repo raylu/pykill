@@ -57,17 +57,24 @@ div.item {
 	}
 	div.item div.name {
 		display: inline-block;
-		width: 383px;
+		width: 336px;
 		padding: 5px 5px 7px;
 	}
 	div.item.ammo div.name {
-		width: 351px;
+		width: 304px;
 	}
 	div.item div.dropped {
 		background-color: #232;
 	}
 	div.item div.destroyed {
 		background-color: #222;
+	}
+	div.item div.cost {
+		display: inline-block;
+		width: 43px;
+		padding: 0 2px;
+		font-family: monospace;
+		font-size: 12px;
 	}
 
 div.clear {

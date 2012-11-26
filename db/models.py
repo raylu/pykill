@@ -60,11 +60,13 @@ class Kill(BaseModel):
 					SELECT
 						killTime, characterID, characterName,
 						corporationID, corporationName, allianceID, allianceName,
-						t.typeID as shipTypeID, typeName as shipTypeName, groupName, damageTaken,
+						t.typeID as shipTypeID, typeName as shipTypeName,
+						groupName, ic.cost as shipCost, damageTaken,
 						s.solarSystemName as systemName, s.security as systemSecurity
 					FROM pkKillmails AS k
 					JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
 					JOIN invTypes AS t ON c.shipTypeID = t.typeID
+					JOIN pkItemCosts AS ic ON c.shipTypeID = ic.typeID
 					JOIN invGroups as g ON t.groupID = g.groupID
 					JOIN mapSolarSystems as s ON k.solarSystemID = s.solarSystemID
 					WHERE k.killID = ?
@@ -132,10 +134,11 @@ class Item(BaseModel):
 			c.execute('''
 					SELECT
 						i.typeID as typeID, typeName, categoryID,
-						flag, qtyDropped, qtyDestroyed, singleton
+						flag, qtyDropped, qtyDestroyed, singleton, ic.cost
 					FROM pkItems as i
 					JOIN invTypes AS t ON i.typeID = t.typeID
-					JOIN invGroups as g ON t.groupID = g.groupID
+					JOIN pkItemCosts AS ic ON i.typeID = ic.typeID
+					JOIN invGroups AS g ON t.groupID = g.groupID
 					WHERE i.killID = ?
 					ORDER BY flag DESC, qtyDropped + qtyDestroyed ASC
 				''', (kill_id,))
