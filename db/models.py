@@ -8,12 +8,11 @@ class BaseModel():
 			setattr(self, f, kwargs[f])
 
 	def save(self):
-		c = conn.cursor()
-		fields = ','.join(self.__dict__.keys())
-		args = ','.join('?' * len(self.fields))
-		sql = 'INSERT INTO %s (%s) VALUES(%s)' % (self.table, fields, args)
-		c.execute(sql, self.__dict__.values())
-		c.close()
+		with conn.cursor() as c:
+			fields = ','.join(self.__dict__.keys())
+			args = ','.join('?' * len(self.fields))
+			sql = 'INSERT INTO %s (%s) VALUES(%s)' % (self.table, fields, args)
+			c.execute(sql, self.__dict__.values())
 
 	def __str__(self):
 		return '%s %s' % (self.__class__, self.__dict__)
@@ -35,24 +34,23 @@ class Kill(BaseModel):
 
 	@classmethod
 	def fetch_list(cls, offset, count):
-		c = conn.cursor()
-		c.execute('''
-				SELECT k.killID, killTime,
-					characterName, corporationID, corporationName, allianceID, allianceName,
-					shipTypeID, typeName as shipTypeName, cost
-				FROM pkKillmails AS k
-				JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
-				JOIN invTypes AS t ON c.shipTypeID = t.typeID
-				JOIN pkKillCosts AS kc ON k.killID = kc.killID
-				ORDER BY killTime DESC
-				LIMIT ?, ?
-			''', (offset, count))
-		while True:
-			attribs = objectify(c)
-			if attribs is None:
-				break
-			yield attribs
-		c.close()
+		with conn.cursor() as c:
+			c.execute('''
+					SELECT k.killID, killTime,
+						characterName, corporationID, corporationName, allianceID, allianceName,
+						shipTypeID, typeName as shipTypeName, cost
+					FROM pkKillmails AS k
+					JOIN pkCharacters AS c ON k.killID = c.killID and c.victim = true
+					JOIN invTypes AS t ON c.shipTypeID = t.typeID
+					JOIN pkKillCosts AS kc ON k.killID = kc.killID
+					ORDER BY killTime DESC
+					LIMIT ?, ?
+				''', (offset, count))
+			while True:
+				attribs = objectify(c)
+				if attribs is None:
+					break
+				yield attribs
 
 	@classmethod
 	def fetch(cls, kill_id):
