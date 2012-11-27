@@ -13,6 +13,7 @@ sys.path.append(pk_path)
 
 from db import models
 import config
+from web.daemon import daemonize
 
 class RequestHandler(tornado.web.RequestHandler):
 	def render_string(self, template_name, **kwargs):
@@ -109,5 +110,7 @@ if __name__ == "__main__":
 		(r'/page/([0-9]+)', ListHandler),
 		(r'/kill/([0-9]+)', KillHandler),
 	], template_path=template_path, debug=config.web['debug'])
+	if not config.web['debug']:
+		daemonize()
 	application.listen(8002)
 	tornado.ioloop.IOLoop.instance().start()
