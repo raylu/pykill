@@ -4,5 +4,6 @@ db:
 
 web:
     debug: false
+    mp_token: '123abc'
 
 # vim: set et ft=yaml:

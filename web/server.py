@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
+import base64
 from collections import defaultdict
 import copy
 import datetime
+import requests
+import json
 import tornado.ioloop
 import tornado.web
 
@@ -20,6 +23,16 @@ class RequestHandler(tornado.web.RequestHandler):
 		s = super(RequestHandler, self).render_string(template_name, **kwargs)
 		return s.replace(b'\n', b'') # this is like Django's {% spaceless %}
 
+	def track(self, event, properties={}):
+		properties['token'] = config.web['mp_token']
+		properties['ip'] = self.request.remote_ip
+		params = {
+			'event': event,
+			'properties': properties,
+		}
+		data = base64.b64encode(bytes(json.dumps(params), 'utf-8'))
+		r = requests.post('http://api.mixpanel.com/track/', data={'data': data})
+
 class MainHandler(RequestHandler):
 	def get(self):
 		self.redirect('/page/1')
@@ -35,6 +48,7 @@ class ListHandler(RequestHandler):
 			max_page += 1
 		kills = models.Kill.fetch_list((page-1) * self.page_size, self.page_size)
 		self.render('list.html', kills=kills, page={'current': page, 'max': max_page})
+		self.track('pykill - list', {'page': page})
 
 class KillHandler(RequestHandler):
 	def get(self, kill_id):
@@ -102,6 +116,8 @@ class KillHandler(RequestHandler):
 			kill.ago = '%s days' % round(ago.days + ago.seconds / (60 * 60 * 24), 1)
 
 		self.render('kill.html', kill=kill)
+
+		self.track('pykill - kill', {'kill': kill_id})
 
 if __name__ == "__main__":
 	template_path = path.join(pk_path, 'web', 'templates')
