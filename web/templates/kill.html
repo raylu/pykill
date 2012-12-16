@@ -61,7 +61,7 @@
 						<img src="http://image.eveonline.com/InventoryType/{{ item.typeID }}_32.png">
 						<div class="name {{ item.dropped and "dropped" or "destroyed" }}">
 							{{ item.typeName }} {{ item.singleton == 2 and "(BPC)" or "" }}
-							{{ item.quantity > 1 and "x%d" % item.quantity or "" }}
+							{{ item.quantity > 1 and "×%d" % item.quantity or "" }}
 						</div>
 						<div class="cost">{{ round(item.total_cost / 1e6, 2) }}</div>
 					</div>
