@@ -51,7 +51,7 @@ CREATE TABLE `pkItems` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `pkItemCosts` (
-	`typeID` int NOT NULL,
+	`typeID` int NOT NULL UNIQUE,
 	`cost` bigint unsigned NOT NULL,
 	PRIMARY KEY (`typeID`),
 	CONSTRAINT `fk_itemcost_types` FOREIGN KEY (`typeID`) REFERENCES `invTypes` (`typeID`)
@@ -59,7 +59,7 @@ CREATE TABLE `pkItemCosts` (
 
 CREATE TABLE `pkKillCosts` (
 	`id` int unsigned NOT NULL AUTO_INCREMENT,
-	`killID` int unsigned NOT NULL,
+	`killID` int unsigned NOT NULL UNIQUE,
 	`cost` bigint unsigned NOT NULL,
 	PRIMARY KEY (`id`),
 	CONSTRAINT `fk_killlcost_km` FOREIGN KEY (`killID`) REFERENCES `pkKillmails` (`killID`)

@@ -43,6 +43,28 @@ def query(type_id):
 	value = tree.getroot().find('marketstat').find('type').find('sell').find('percentile').text
 	return int(Decimal(value) * 100)
 
+def update_kill(kill_id):
+	with conn.cursor() as c:
+		c.execute('''
+				SELECT cost from pkCharacters as c
+				JOIN pkItemCosts AS ic ON c.shipTypeID = ic.typeID
+				WHERE killId = ? AND victim
+			''', (kill_id,))
+		r = c.fetchone()
+		if r:
+			cost = r[0]
+			c.nextset()
+		else:
+			cost = 0
+		c.execute('''
+				SELECT SUM(cost * (qtyDropped + qtyDestroyed)) FROM pkItems AS i
+				JOIN pkItemCosts AS ic ON i.typeID = ic.typeID WHERE killID = ?
+			''', (kill_id,))
+		r = c.fetchone()
+		if r[0]:
+			cost += r[0]
+		c.execute('UPDATE pkKillCosts SET cost = ? WHERE killID = ?', (cost, kill_id))
+
 parambatch = []
 for type_id in fetch_type_ids():
 	value = query(type_id)
@@ -52,3 +74,9 @@ with conn.cursor() as c:
 			INSERT INTO pkItemCosts (typeID, cost) VALUES(?, ?)
 			ON DUPLICATE KEY UPDATE cost = ?
 		''', parambatch)
+	c.execute('SELECT killID from pkKillmails')
+	while True:
+		r = c.fetchone()
+		if r is None:
+			break
+		update_kill(r[0])
